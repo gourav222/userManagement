@@ -99,4 +99,59 @@ export const resetPassword = async (req, res) => {
   } catch (err) {
     console.log(err, "resetpassword failed");
   }
+};
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const allUsers = await User.find();
+    res.status(201).json({
+      message: "All users",
+      allUsers,
+    });
+  } catch (err) {
+    res.status(400).json({
+      message: "Bad Request",
+    });
+  }
+};
+
+export const deleteUser = async (req, res) => {
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.status(201).json({
+      message: "User deleted successfully",
+    });
+  } catch (err) {
+    res.status(401).json({
+      message: "Request Not Found",
+    });
+  }
+};
+
+export const getUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    res.status(201).json({
+      message: "User",
+      user,
+    });
+  } catch (err) {
+    res.status(401).json({
+      message: "Request Not Found",
+    });
+  }
+};
+
+export const editUser = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(req.params.id, req.body);
+    res.status(201).json({
+      message: "User updated successfully",
+      user,
+    });
+  } catch (err) {
+    res.status(401).json({
+      message: "Request Not Found",
+    });
+  }
 }
