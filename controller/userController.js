@@ -2,6 +2,7 @@ import User from "../models/userModels.js";
 import sendToken from "../utility/sendToken.js";
 import nodemailer from "nodemailer";
 import bcryptjs from "bcryptjs";
+import { sendMessageToKafka } from "./kafkaController.js";
 
 export const registerUser = async (req, res) => {
   try {
@@ -11,11 +12,13 @@ export const registerUser = async (req, res) => {
       email,
       password,
     });
+    const message = await sendMessageToKafka("Register User Successfully");
     res.status(201).json({
       status: "success",
       data: {
         user,
       },
+      message,
     });
   } catch (err) {
     console.log(err, "");
@@ -104,9 +107,12 @@ export const resetPassword = async (req, res) => {
 export const getAllUsers = async (req, res) => {
   try {
     const allUsers = await User.find();
+    const message = await sendMessageToKafka("Get All Users");
+    console.log("message", message);
     res.status(201).json({
       message: "All users",
       allUsers,
+      message,
     });
   } catch (err) {
     res.status(400).json({
@@ -118,8 +124,9 @@ export const getAllUsers = async (req, res) => {
 export const deleteUser = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
+    const message = await sendMessageToKafka("Delete User Successfully");
     res.status(201).json({
-      message: "User deleted successfully",
+      message,
     });
   } catch (err) {
     res.status(401).json({
@@ -131,8 +138,9 @@ export const deleteUser = async (req, res) => {
 export const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
+    const message = await sendMessageToKafka("Get User Successfully");
     res.status(201).json({
-      message: "User",
+      message,
       user,
     });
   } catch (err) {
@@ -154,4 +162,4 @@ export const editUser = async (req, res) => {
       message: "Request Not Found",
     });
   }
-}
+};
